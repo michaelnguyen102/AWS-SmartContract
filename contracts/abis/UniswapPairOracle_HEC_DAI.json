@@ -149,45 +149,6 @@
     },
     {
         "inputs": [],
-        "name": "getBlockTimestampLast",
-        "outputs": [
-            {
-                "internalType": "uint32",
-                "name": "blockTime",
-                "type": "uint32"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "getPrice0CumulativeLast",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "price0",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "getPrice1CumulativeLast",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "price1",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
         "name": "pair",
         "outputs": [
             {

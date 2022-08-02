@@ -26,6 +26,7 @@ async function updateMultiChainOracle(contract, contractBsc, label) {
     try {
     // Specify custom tx overrides, such as gas price https://docs.ethers.io/ethers.js/v5-beta/api-contract.html#overrides
     const overrides = { gasPrice: process.env.DEFAULT_GAS_PRICE, gasLimit: process.env.GAS_LIMIT };
+    const overridesBSC = { gasPrice: process.env.DEFAULT_GAS_PRICE_BSC, gasLimit: process.env.GAS_LIMIT_BSC };
 
     //Run update on FTM Oracle
     const tx = await contract.update(overrides)
@@ -34,15 +35,15 @@ async function updateMultiChainOracle(contract, contractBsc, label) {
     console.log(label, successMessage)
 
     //Retrieves updated data from FTM
-    const blockTimestampLast = await contract.getBlockTimestampLast(overrides);
-    const price0CumulativeLast = await contract.getPrice0CumulativeLast(overrides);
-    const price1CumulativeLast = await contract.getPrice1CumulativeLast(overrides);
+    const blockTimestampLast = await contract.blockTimestampLast();
+    const price0CumulativeLast = await contract.price0CumulativeLast();
+    const price1CumulativeLast = await contract.price1CumulativeLast();
 
-    successMessage = `Retrieve data...blockTimestampLast: ${blockTimestampLast}, price0CumulativeLast: ${price0CumulativeLast}, price1CumulativeLast:  ${price1CumulativeLast}`;
+    successMessage = `Retrieving data...blockTimestampLast: ${blockTimestampLast}, price0CumulativeLast: ${price0CumulativeLast}, price1CumulativeLast:  ${price1CumulativeLast}`;
     console.log(label, successMessage)
 
     //Update BSC Oracle
-     const txBSC = await contractBsc.update(price0CumulativeLast, price1CumulativeLast, blockTimestampLast, overrides)
+     const txBSC = await contractBsc.update(price0CumulativeLast, price1CumulativeLast, blockTimestampLast, overridesBSC)
      successMessage = `Calling BSC update func: Transaction sent https://bscscan.com/tx/${txBSC.hash}`;
     console.log(label, successMessage)
 
@@ -55,8 +56,8 @@ async function updateMultiChainOracle(contract, contractBsc, label) {
 
 }
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+async function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 exports.handler = async function() {
