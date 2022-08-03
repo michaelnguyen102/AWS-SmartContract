@@ -30,8 +30,6 @@ async function updateMultiChainOracle(contract, contractBsc, label) {
 
      //Retrieves updated data from FTM
     let blockTimestampLast = await contract.blockTimestampLast();
-    let price0CumulativeLast = await contract.price0CumulativeLast();
-    let price1CumulativeLast = await contract.price1CumulativeLast();
 
     //Run update on FTM Oracle
     const tx = await contract.update(overrides)
@@ -40,8 +38,8 @@ async function updateMultiChainOracle(contract, contractBsc, label) {
     console.log(label, successMessage)
 
     let blockTimestampLast_updated = await contract.blockTimestampLast();
-    let price0CumulativeLast_updated = await contract.price0CumulativeLast();
-    let price1CumulativeLast_updated = await contract.price1CumulativeLast();
+    let price0Average = await contract.price0Average();
+    let price1Average = await contract.price1Average();
 
     //ftm update tx not done...wait
     if (blockTimestampLast_updated == blockTimestampLast) {
@@ -50,15 +48,16 @@ async function updateMultiChainOracle(contract, contractBsc, label) {
 
       //update new values
       blockTimestampLast_updated = await contract.blockTimestampLast();
-      price0CumulativeLast_updated = await contract.price0CumulativeLast();
-      price1CumulativeLast_updated = await contract.price1CumulativeLast();
+      price0Average = await contract.price0Average();
+      price1Average = await contract.price1Average();
     }      
 
-    successMessage = `Retrieving data...blockTimestampLast: ${blockTimestampLast_updated}, price0CumulativeLast: ${price0CumulativeLast_updated}, price1CumulativeLast:  ${price1CumulativeLast_updated}`;
+    successMessage = `Retrieving data...blockTimestampLast: ${blockTimestampLast_updated}, price0Average: ${price0Average}, price1Average:  ${price1Average}`;
     console.log(label, successMessage)
 
     //Update BSC Oracle
-     const txBSC = await contractBsc.update(price0CumulativeLast_updated, price1CumulativeLast_updated, blockTimestampLast_updated, overridesBSC)
+     const txBSC = await contractBsc.update(price0Average, price1Average, blockTimestampLast_updated, overridesBSC)
+
      successMessage = `Calling BSC update func: Transaction sent https://bscscan.com/tx/${txBSC.hash}`;
     console.log(label, successMessage)
 
