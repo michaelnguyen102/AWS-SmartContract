@@ -28,22 +28,37 @@ async function updateMultiChainOracle(contract, contractBsc, label) {
     const overrides = { gasPrice: process.env.DEFAULT_GAS_PRICE, gasLimit: process.env.GAS_LIMIT };
     const overridesBSC = { gasPrice: process.env.DEFAULT_GAS_PRICE_BSC, gasLimit: process.env.GAS_LIMIT_BSC };
 
+     //Retrieves updated data from FTM
+    let blockTimestampLast = await contract.blockTimestampLast();
+    let price0CumulativeLast = await contract.price0CumulativeLast();
+    let price1CumulativeLast = await contract.price1CumulativeLast();
+
     //Run update on FTM Oracle
     const tx = await contract.update(overrides)
 
     let successMessage = `Calling FTM update func: Transaction sent https://ftmscan.com/tx/${tx.hash}`;
     console.log(label, successMessage)
 
-    //Retrieves updated data from FTM
-    const blockTimestampLast = await contract.blockTimestampLast();
-    const price0CumulativeLast = await contract.price0CumulativeLast();
-    const price1CumulativeLast = await contract.price1CumulativeLast();
+    let blockTimestampLast_updated = await contract.blockTimestampLast();
+    let price0CumulativeLast_updated = await contract.price0CumulativeLast();
+    let price1CumulativeLast_updated = await contract.price1CumulativeLast();
 
-    successMessage = `Retrieving data...blockTimestampLast: ${blockTimestampLast}, price0CumulativeLast: ${price0CumulativeLast}, price1CumulativeLast:  ${price1CumulativeLast}`;
+    //ftm update tx not done...wait
+    if (blockTimestampLast_updated == blockTimestampLast) {
+      //await sleep(60000 * 3);
+      await sleep(10000); //sleep 10s
+
+      //update new values
+      blockTimestampLast_updated = await contract.blockTimestampLast();
+      price0CumulativeLast_updated = await contract.price0CumulativeLast();
+      price1CumulativeLast_updated = await contract.price1CumulativeLast();
+    }      
+
+    successMessage = `Retrieving data...blockTimestampLast: ${blockTimestampLast_updated}, price0CumulativeLast: ${price0CumulativeLast_updated}, price1CumulativeLast:  ${price1CumulativeLast_updated}`;
     console.log(label, successMessage)
 
     //Update BSC Oracle
-     const txBSC = await contractBsc.update(price0CumulativeLast, price1CumulativeLast, blockTimestampLast, overridesBSC)
+     const txBSC = await contractBsc.update(price0CumulativeLast_updated, price1CumulativeLast_updated, blockTimestampLast_updated, overridesBSC)
      successMessage = `Calling BSC update func: Transaction sent https://bscscan.com/tx/${txBSC.hash}`;
     console.log(label, successMessage)
 
